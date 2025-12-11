@@ -14,19 +14,12 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    FastAPI lifespan context manager.
-
-    Handles startup and shutdown events for the application.
-    """
-    # Startup
     logger.info("Starting up application...")
     setup()
     logger.info("Application startup complete")
 
     yield
 
-    # Shutdown
     logger.info("Shutting down application...")
 
 

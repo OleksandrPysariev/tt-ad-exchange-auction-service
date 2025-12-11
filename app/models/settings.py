@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, BaseModel, PostgresDsn
@@ -13,6 +14,7 @@ class GeneralSettings(BaseModel):
     allow_origins: list[str] = ["*"]
     allow_methods: list[str] = ["*"]
     allow_headers: list[str] = ["*"]
+    data_file_path: Path = Field(default=Path.cwd() / "data.json", description="Path to the auction data JSON file")
 
 
 class FastAPISettings(BaseModel):

@@ -37,11 +37,6 @@ class DBSettings(BaseModel):
 
     @property
     def async_url(self) -> PostgresDsn:
-        """
-        Assemble database URL from settings.
-
-        :return: database PostgresDsn.
-        """
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
             host=self.host,
@@ -52,10 +47,16 @@ class DBSettings(BaseModel):
         )
 
 
+class RedisSettings(BaseModel):
+    startup_nodes: list[dict[str, str | int]] = [{"host": "localhost", "port": 6379}]
+    default_ttl: int = 3600
+
+
 class Settings(BaseSettings):
     general: GeneralSettings = Field(default_factory=GeneralSettings)
     fastapi: FastAPISettings = Field(default_factory=FastAPISettings)
     db: DBSettings = DBSettings()
+    redis: RedisSettings = RedisSettings()
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.commands.load_data import load_json_to_db
 from app.config.settings import settings
 from app.config.logging_config import configure_logging
 from app.startup import setup

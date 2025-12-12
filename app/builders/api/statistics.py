@@ -35,7 +35,6 @@ class StatisticsResponseBuilder(BaseBuilder):
                 bidder_id = parts[1]
                 metric = parts[2]
 
-                # Store as float for revenue, int for others
                 if metric == "revenue":
                     bidders_data[bidder_id][metric] = float(value)
                 else:

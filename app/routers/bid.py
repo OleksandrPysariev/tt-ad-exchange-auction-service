@@ -8,9 +8,8 @@ from app.db.session import get_db_session
 from app.dependencies.rate_limit import check_rate_limit
 from app.models.api.request.bid import BidRequest
 from app.models.api.response.bid import BidResponse
-from app.redis_db.client import redis_client
 from app.services.bidding import BiddingService
-from app.services.statistics import StatisticsService, statistics_service
+from app.services.statistics import statistics_service
 
 logger = logging.getLogger(__name__)
 
@@ -66,9 +65,7 @@ async def bid(
     bidding_service = BiddingService(session, statistics_service)
 
     try:
-        result = await bidding_service.run_auction(
-            request.supply_id, request.country, request.tmax
-        )
+        result = await bidding_service.run_auction(request.supply_id, request.country, request.tmax)
         return BiddingResponseBuilder.build(auction_result=result)
     except ValueError as e:
         logger.error(f"Auction failed: {str(e)}")

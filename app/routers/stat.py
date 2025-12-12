@@ -4,7 +4,6 @@ from fastapi import APIRouter, status
 
 from app.builders.api.statistics import StatisticsResponseBuilder
 from app.models.api.response.statistics import StatisticsResponse
-from app.models.services.statistics import StatisticsResult
 from app.services.statistics import statistics_service
 
 router = APIRouter(tags=["bid"])

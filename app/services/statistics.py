@@ -25,7 +25,6 @@ class StatisticsService:
             await pipe.hincrby(key, f"country:{country}", 1)
             await pipe.execute()
 
-            logger.debug(f"Recorded request for supply={supply_id}, country={country}")
         except Exception as e:
             logger.error(f"Error recording request: {e}", exc_info=True)
 
@@ -37,41 +36,23 @@ class StatisticsService:
         no_bid_ids: list[str],
         timeout_ids: list[str] = None,
     ) -> None:
-        """
-        Record auction results including winner, no bids, and timeouts.
-
-        Args:
-            supply_id: Supply ID
-            winner_id: Winning bidder ID (None if no winner)
-            winning_price: Winning bid price
-            no_bid_ids: List of bidder IDs that didn't bid
-            timeout_ids: List of bidder IDs that timed out
-        """
         try:
             key = self._get_supply_key(supply_id)
             pipe = self.redis.pipeline()
 
-            # Record winner
             if winner_id:
                 await pipe.hincrby(key, f"bidder:{winner_id}:wins", 1)
                 await pipe.hincrbyfloat(key, f"bidder:{winner_id}:revenue", winning_price)
 
-            # Record no bids
             for bidder_id in no_bid_ids:
                 await pipe.hincrby(key, f"bidder:{bidder_id}:no_bids", 1)
 
-            # Record timeouts
             if timeout_ids:
                 for bidder_id in timeout_ids:
                     await pipe.hincrby(key, f"bidder:{bidder_id}:timeouts", 1)
 
             await pipe.execute()
 
-            logger.debug(
-                f"Recorded auction result for supply={supply_id}, "
-                f"winner={winner_id}, price={winning_price}, "
-                f"no_bids={len(no_bid_ids)}, timeouts={len(timeout_ids) if timeout_ids else 0}"
-            )
         except Exception as e:
             logger.error(f"Error recording auction result: {e}", exc_info=True)
 

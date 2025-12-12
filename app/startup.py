@@ -8,9 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 async def setup() -> None:
-    """
-    Setup function to ensure auction data file exist.
-    """
     data_file_path = settings.general.data_file_path
 
     if not data_file_path.exists():

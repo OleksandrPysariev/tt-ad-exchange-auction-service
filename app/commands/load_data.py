@@ -43,7 +43,6 @@ async def load_json_to_db(json_path: Path) -> dict[str, int]:
                 added_bidders_count += 1
                 logger.info(f"Added bidder {bidder_id} to current session.")
 
-        # Save any bidders to db
         await session.flush()
 
         added_supplies_count = 0

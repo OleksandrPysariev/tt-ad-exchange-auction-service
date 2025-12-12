@@ -99,8 +99,8 @@ async def test_run_auction_supply_not_found(bidding_service, mock_statistics_ser
         with pytest.raises(ValueError, match="Supply .* not found"):
             await bidding_service.run_auction(supply_id, country)
 
-        # Statistics request should still be recorded
-        mock_statistics_service.record_request.assert_called_once_with(supply_id, country)
+        # No statistics should be recorded for invalid supply
+        mock_statistics_service.record_request.assert_not_called()
         mock_statistics_service.record_auction_result.assert_not_called()
 
 

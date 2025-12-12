@@ -69,10 +69,4 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """
-    Get cached settings instance.
-
-    Uses LRU cache to ensure settings are loaded only once
-    and reused across the application lifecycle.
-    """
     return Settings()

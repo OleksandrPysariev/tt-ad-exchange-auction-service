@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.settings import settings
 from app.config.logging_config import configure_logging
-from app.routers import bid, root
+from app.routers import bid, root, stat, supply
 from app.startup import setup
 
 configure_logging()
@@ -43,4 +43,6 @@ app.add_middleware(
 )
 
 app.include_router(bid.router)
+app.include_router(stat.router)
+app.include_router(supply.router)
 app.include_router(root.router)

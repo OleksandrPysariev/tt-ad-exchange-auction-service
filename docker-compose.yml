@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aea-postgres
+    environment:
+      POSTGRES_DB: aea_db
+      POSTGRES_USER: aea_user
+      POSTGRES_PASSWORD: 123
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aea_user -d aea_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aea-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: aea-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - aea-network
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aea-app
+    environment:
+      # Database settings
+      DB__HOST: postgres
+      DB__PORT: 5432
+      DB__USER: aea_user
+      DB__PASSWORD: 123
+      DB__NAME: aea_db
+      DB__ECHO: "false"
+
+      # Redis settings
+      REDIS__STARTUP_NODES: '[{"host": "redis", "port": 6379}]'
+
+      # General settings
+      GENERAL__LOG_LEVEL: INFO
+      GENERAL__ENV: dev
+
+      # FastAPI settings
+      FASTAPI__TITLE: "Ad Exchange Auction Service"
+      FASTAPI__VERSION: "1.0.0"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data.json:/app/data.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aea-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000', timeout=2)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+networks:
+  aea-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

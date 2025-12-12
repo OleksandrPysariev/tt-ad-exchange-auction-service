@@ -14,7 +14,10 @@ class Bidder(Base):
         back_populates="bidders",
     )
 
-    __table_args__ = (Index("ix_bidders_country", "country"),)
+    __table_args__ = (
+        Index("ix_bidders_country", "country"),
+        Index("idx_bidders_country_id", "country", "id"),
+    )
 
     def __repr__(self) -> str:
         return f"<Bidder(id={self.id}, country={self.country})>"

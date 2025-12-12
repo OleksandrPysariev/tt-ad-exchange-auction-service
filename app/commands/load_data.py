@@ -5,8 +5,8 @@ from pathlib import Path
 from app.db.dao.bidder import bidder_dao
 from app.db.dao.supply import supply_dao
 from app.db.session import session_factory
-from app.models.bidder import BidderCreate
-from app.models.supply import SupplyCreate
+from app.models.dao.bidder import BidderCreate
+from app.models.dao.supply import SupplyCreate
 
 logger = logging.getLogger(__name__)
 

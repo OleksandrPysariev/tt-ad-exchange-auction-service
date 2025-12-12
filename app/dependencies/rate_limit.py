@@ -2,7 +2,7 @@ import logging
 
 from fastapi import HTTPException, status
 
-from app.models.bid import BidRequest
+from app.models.api.request.bid import BidRequest
 from app.services.rate_limiter import rate_limiter
 
 

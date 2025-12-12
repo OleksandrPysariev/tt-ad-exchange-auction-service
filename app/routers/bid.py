@@ -3,10 +3,14 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.builders.api.bidding import BiddingResponseBuilder
 from app.db.session import get_db_session
 from app.dependencies.rate_limit import check_rate_limit
-from app.models.bid import BidRequest, BidResponse
+from app.models.api.request.bid import BidRequest
+from app.models.api.response.bid import BidResponse
+from app.redis_db.client import redis_client
 from app.services.bidding import BiddingService
+from app.services.statistics import StatisticsService, statistics_service
 
 logger = logging.getLogger(__name__)
 
@@ -54,13 +58,18 @@ async def bid(
     request: BidRequest = Depends(check_rate_limit),
     session: AsyncSession = Depends(get_db_session),
 ) -> BidResponse:
-    logger.info(f"Auction request for {request.supply_id=}, {request.ip=}, {request.country=}")
+    logger.info(
+        f"Auction request for {request.supply_id=}, {request.ip=}, "
+        f"{request.country=}, {request.tmax=}ms"
+    )
 
-    bidding_service = BiddingService(session)
+    bidding_service = BiddingService(session, statistics_service)
 
     try:
-        result = await bidding_service.run_auction(request.supply_id, request.country)
-        return result
+        result = await bidding_service.run_auction(
+            request.supply_id, request.country, request.tmax
+        )
+        return BiddingResponseBuilder.build(auction_result=result)
     except ValueError as e:
         logger.error(f"Auction failed: {str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

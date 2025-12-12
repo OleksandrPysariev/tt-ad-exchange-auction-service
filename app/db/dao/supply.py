@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from app.db.dao.common import CommonDAO
 from app.db.models.supply import Supply
-from app.models.supply import SupplyCreate, SupplyUpdate
+from app.models.dao.supply import SupplyCreate, SupplyUpdate
 
 
 class SupplyDAO(CommonDAO[Supply, SupplyCreate, SupplyUpdate]):

@@ -2,9 +2,11 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.settings import settings
 from app.config.logging_config import configure_logging
+from app.routers import bid, root
 from app.startup import setup
 
 configure_logging()
@@ -31,3 +33,14 @@ app = FastAPI(
     root_path=settings.fastapi.root_path,
     lifespan=lifespan,
 )
+
+app.add_middleware(
+    CORSMiddleware,  # noqa
+    allow_origins=settings.general.allow_origins,
+    allow_credentials=settings.general.allow_credentials,
+    allow_methods=settings.general.allow_methods,
+    allow_headers=settings.general.allow_headers,
+)
+
+app.include_router(bid.router)
+app.include_router(root.router)
